@@ -1,4 +1,4 @@
-package com.example.api.common.exception;
+package com.example.api.exception;
 
 import com.example.core.common.enums.ErrorCodes;
 import com.example.core.common.exception.*;

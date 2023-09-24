@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+</head>
+<body>
+    <div th:text="|accessToken: ${kakaoOAuth2Token?.accessToken}|"></div>
+    <div th:text="|refreshToken: ${kakaoOAuth2Token?.refreshToken}|"></div>
+    <div th:text="|expiresIn: ${kakaoOAuth2Token?.expiresIn}|"></div>
+    <div th:text="|refreshTokenExpiresIn: ${kakaoOAuth2Token?.refreshTokenExpiresIn}|"></div>
+    <div th:text="|idToken: ${kakaoOAuth2Token?.idToken}|"></div>
+    <div th:text="|scope: ${kakaoOAuth2Token?.scope}|"></div>
+
+    <div th:text="|id: ${kakaoOAuth2User?.id}|"></div>
+    <div th:text="|connectedAt: ${kakaoOAuth2User?.connectedAt}|"></div>
+
+    <div th:text="|properties.nickname: ${kakaoOAuth2User?.properties?.nickname}|"></div>
+    <div th:text="|properties.profileImage: ${kakaoOAuth2User?.properties?.profileImage}|"></div>
+    <div th:text="|properties.thumbnailImage: ${kakaoOAuth2User?.properties?.thumbnailImage}|"></div>
+
+    <div th:text="|kakaoAccount.profileNicknameNeedsAgreement: ${kakaoOAuth2User?.kakaoAccount?.profileNicknameNeedsAgreement}|"></div>
+    <div th:text="|kakaoAccount.profileImageNeedsAgreement: ${kakaoOAuth2User?.kakaoAccount?.profileImageNeedsAgreement}|"></div>
+    <div th:text="|kakaoAccount.profile: ${kakaoOAuth2User?.kakaoAccount?.profile}|"></div>
+    <div th:text="|kakaoAccount.hasEmail: ${kakaoOAuth2User?.kakaoAccount?.hasEmail}|"></div>
+    <div th:text="|kakaoAccount.emailNeedsAgreement: ${kakaoOAuth2User?.kakaoAccount?.emailNeedsAgreement}|"></div>
+    <div th:text="|kakaoAccount.isEmailValid: ${kakaoOAuth2User?.kakaoAccount?.isEmailValid}|"></div>
+    <div th:text="|kakaoAccount.isEmailVerified: ${kakaoOAuth2User?.kakaoAccount?.isEmailVerified}|"></div>
+    <div th:text="|kakaoAccount.email: ${kakaoOAuth2User?.kakaoAccount?.email}|"></div>
+    <div th:text="|kakaoAccount.hasAgeRange: ${kakaoOAuth2User?.kakaoAccount?.hasAgeRange}|"></div>
+    <div th:text="|kakaoAccount.ageRangeNeedsAgreement: ${kakaoOAuth2User?.kakaoAccount?.ageRangeNeedsAgreement}|"></div>
+    <div th:text="|kakaoAccount.ageRange: ${kakaoOAuth2User?.kakaoAccount?.ageRange}|"></div>
+    <div th:text="|kakaoAccount.hasBirthday: ${kakaoOAuth2User?.kakaoAccount?.hasBirthday}|"></div>
+    <div th:text="|kakaoAccount.birthdayNeedsAgreement: ${kakaoOAuth2User?.kakaoAccount?.birthdayNeedsAgreement}|"></div>
+    <div th:text="|kakaoAccount.birthday: ${kakaoOAuth2User?.kakaoAccount?.birthday}|"></div>
+    <div th:text="|kakaoAccount.birthdayType: ${kakaoOAuth2User?.kakaoAccount?.birthdayType}|"></div>
+    <div th:text="|kakaoAccount.hasGender: ${kakaoOAuth2User?.kakaoAccount?.hasGender}|"></div>
+    <div th:text="|kakaoAccount.genderNeedsAgreement: ${kakaoOAuth2User?.kakaoAccount?.genderNeedsAgreement}|"></div>
+    <div th:text="|kakaoAccount.gender: ${kakaoOAuth2User?.kakaoAccount?.gender}|"></div>
+</body>
+</html>

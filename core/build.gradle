@@ -2,9 +2,13 @@ bootJar { enabled = false }
 jar { enabled = true }
 
 dependencies {
-
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // httpclient
+    implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
+
+    // jwt
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
     // h2 db
     runtimeOnly 'com.h2database:h2'
