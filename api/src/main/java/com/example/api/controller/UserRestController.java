@@ -1,5 +1,8 @@
 package com.example.api.controller;
 
+import com.example.api.security.annotation.ClientRequest;
+import com.example.api.security.annotation.Secured;
+import com.example.api.security.resolver.WebRequest;
 import com.example.core.common.response.CustomResponse;
 import com.example.core.user.domain.User;
 import com.example.core.user.service.UserService;
@@ -17,8 +20,9 @@ public class UserRestController {
 
     private final UserService userService;
 
+    @Secured
     @GetMapping("/api/v1/users/{userId}")
-    public CustomResponse getUser(@PathVariable Long userId, HttpServletRequest request) {
+    public CustomResponse getUser(@ClientRequest WebRequest webRequest, @PathVariable Long userId, HttpServletRequest request) {
         User item = userService.getUser(userId);
 
         return new CustomResponse.Builder().addItems(item).build();
