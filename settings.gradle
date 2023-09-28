@@ -1,4 +1,4 @@
-rootProject.name = 'demo'
+rootProject.name = 'hexbit'
 
-include "api"
-include "core"
+include "hexbit-api"
+include "hexbit-core"
