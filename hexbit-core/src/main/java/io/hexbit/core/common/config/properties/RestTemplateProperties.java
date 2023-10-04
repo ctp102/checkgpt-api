@@ -1,14 +1,15 @@
 package io.hexbit.core.common.config.properties;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 
-@Getter
-@Setter
-@Configuration
 @ConfigurationProperties("rest.template")
+@ConfigurationPropertiesBinding
+@Getter
+@AllArgsConstructor
 public class RestTemplateProperties {
 
     private ConnectionManager connectionManager;

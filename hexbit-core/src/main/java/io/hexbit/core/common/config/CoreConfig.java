@@ -1,7 +1,9 @@
 package io.hexbit.core.common.config;
 
+import io.hexbit.core.common.config.properties.CoinMarketCapProperties;
 import io.hexbit.core.common.config.properties.KakaoOAuth2Properties;
 import io.hexbit.core.common.config.properties.RestTemplateProperties;
+import io.hexbit.core.external.coinmarketcap.CoinMarketCapRestClient;
 import io.hexbit.core.oauth2.restclient.KakaoRestClient;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -83,6 +85,11 @@ public class CoreConfig {
     @Bean
     public KakaoRestClient kakaoRestClient(KakaoOAuth2Properties kakaoOAuth2Properties, RestTemplate restTemplate, ObjectMapper objectMapper) {
         return new KakaoRestClient(kakaoOAuth2Properties, restTemplate, objectMapper);
+    }
+
+    @Bean
+    public CoinMarketCapRestClient coinMarketCapRestClient(CoinMarketCapProperties coinMarketCapProperties, RestTemplate restTemplate, ObjectMapper objectMapper) {
+        return new CoinMarketCapRestClient(coinMarketCapProperties, restTemplate, objectMapper);
     }
 
 }
