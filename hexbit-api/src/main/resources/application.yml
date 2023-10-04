@@ -7,22 +7,24 @@ rest:
       evict-idle-connections: 10
       connect-timeout: 30000
       read-timeout: 30000
+
 --- # default profile
 spring:
   profiles:
     active: local
+
 --- # local
 spring:
   config:
     activate:
       on-profile: local
-    import: classpath:application-secret.yml
+
 --- # dev
 spring:
   config:
     activate:
       on-profile: dev
-    import: classpath:application-secret.yml
+
 ---
 spring:
   profiles:

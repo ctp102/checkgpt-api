@@ -7,11 +7,17 @@ dependencies {
     // httpclient
     implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
 
+    // jasypt
+    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
+
     // jwt
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
     // h2 db
     runtimeOnly 'com.h2database:h2'
+
+    // mysql
+    implementation 'mysql:mysql-connector-java:8.0.32'
 }
 
 tasks.register("prepareKotlinBuildScriptModel"){}

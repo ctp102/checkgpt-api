@@ -1,5 +1,8 @@
-spring.config.activate.on-profile: local
 spring:
+  config:
+    activate:
+      on-profile: local
+    import: classpath:application-secret.yml
   datasource:
     url: jdbc:h2:mem:test
     username: sa
@@ -19,13 +22,16 @@ spring:
     console:
       enabled: true
 ---
-spring.config.activate.on-profile: dev
 spring:
+  config:
+    activate:
+      on-profile: dev
+    import: classpath:application-secret.yml
   datasource:
-    url: jdbc:h2:mem:test
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+    url: ENC(I8kICfFTkM9T0NYOBCpM9RA0n3DNVBR1Wo8OTEoaC4hJKBaNebCJcrpcZ4WStr0UfxEzGsrSUMMdIptQLw5KmIhdpLQmQUV9)
+    username: ENC(HX6qMa/nt8VneAFoGV3N3zqxug8eS+zb)
+    password: ENC(VcWk4Tp3M8Q9WrASgycVJdCWD00tbvfDGiymQ1ZV5mk=)
+    driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 40
   jpa:
