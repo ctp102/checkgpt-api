@@ -1,13 +1,12 @@
 package io.hexbit.core.common.config;
 
-import io.hexbit.core.common.config.properties.CoinMarketCapProperties;
-import io.hexbit.core.common.config.properties.KakaoOAuth2Properties;
-import io.hexbit.core.common.config.properties.RestTemplateProperties;
-import io.hexbit.core.external.coinmarketcap.CoinMarketCapRestClient;
-import io.hexbit.core.oauth2.restclient.KakaoRestClient;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.hexbit.core.common.config.properties.KakaoOAuth2Properties;
+import io.hexbit.core.common.config.properties.RestTemplateProperties;
+import io.hexbit.core.oauth2.restclient.KakaoRestClient;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
@@ -79,17 +78,14 @@ public class CoreConfig {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.disable(SerializationFeature.INDENT_OUTPUT);
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+        objectMapper.registerModule(new JavaTimeModule());
         return objectMapper;
     }
 
     @Bean
     public KakaoRestClient kakaoRestClient(KakaoOAuth2Properties kakaoOAuth2Properties, RestTemplate restTemplate, ObjectMapper objectMapper) {
         return new KakaoRestClient(kakaoOAuth2Properties, restTemplate, objectMapper);
-    }
-
-    @Bean
-    public CoinMarketCapRestClient coinMarketCapRestClient(CoinMarketCapProperties coinMarketCapProperties, RestTemplate restTemplate, ObjectMapper objectMapper) {
-        return new CoinMarketCapRestClient(coinMarketCapProperties, restTemplate, objectMapper);
     }
 
 }
