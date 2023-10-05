@@ -23,7 +23,7 @@ public class KakaoOAuth2Service implements OAuth2Service {
                 .queryParam("client_id", kakaoRestClient.getKakaoOAuth2Properties().getClientId())
                 .queryParam("redirect_uri", redirectURI)
                 .queryParam("response_type", "code")
-                .queryParam("scope", "profile_nickname, account_email, age_range")
+                .queryParam("scope", "profile_nickname, profile_image, account_email")
                 .toUriString();
     }
 
