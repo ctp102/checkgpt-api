@@ -1,12 +1,18 @@
 package io.hexbit.core.user.service;
 
+import io.hexbit.core.common.enums.ErrorCodes;
 import io.hexbit.core.common.exception.CustomNotFoundException;
 import io.hexbit.core.user.domain.User;
+import io.hexbit.core.user.dto.UserResponseDto;
 import io.hexbit.core.user.repository.UserRepository;
-import io.hexbit.core.common.enums.ErrorCodes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -28,6 +34,15 @@ public class UserService {
         log.info("회원가입이 완료되었습니다. provider: {}, email: {}", savedUser.getProvider(), savedUser.getEmail());
     }
 
+    public Page<UserResponseDto> getUserList(Pageable pageable) {
+        Page<User> result = userRepository.findAll(pageable);
+        List<UserResponseDto> userResponseDtoList = result.getContent().stream()
+                .map(UserResponseDto::of)
+                .toList();
+
+        return new PageImpl<>(userResponseDtoList, pageable, result.getTotalElements());
+    }
+
     public User getUser(Long userId) {
         User user = userRepository.findById(userId).orElse(null);
 
@@ -37,5 +52,4 @@ public class UserService {
         }
         return user;
     }
-
 }
