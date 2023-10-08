@@ -10,9 +10,6 @@ dependencies {
     // jasypt
     implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
 
-    // jwt
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
-
     // h2 db
     runtimeOnly 'com.h2database:h2'
 

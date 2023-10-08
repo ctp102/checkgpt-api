@@ -3,9 +3,12 @@ package io.hexbit.core.oauth2.service;
 import io.hexbit.core.oauth2.domain.KakaoOAuth2Response;
 import io.hexbit.core.oauth2.domain.KakaoOAuth2Token;
 import io.hexbit.core.oauth2.domain.KakaoOAuth2User;
+import io.hexbit.core.oauth2.dto.OAuth2RequestDto;
 import io.hexbit.core.oauth2.enums.KakaoApiTypes;
+import io.hexbit.core.oauth2.enums.OAuth2ProviderTypes;
 import io.hexbit.core.oauth2.form.KakaoOAuth2TokenForm;
 import io.hexbit.core.oauth2.restclient.KakaoRestClient;
+import io.hexbit.core.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,7 @@ public class KakaoOAuth2Service implements OAuth2Service {
 
     private final KakaoRestClient kakaoRestClient;
 
+    @Override
     public String getOAuth2AuthorizationURI(String redirectURI) {
         return UriComponentsBuilder.fromUriString(KakaoApiTypes.GET_AUTHORIZATION_CODE.getEndPoint())
                 .queryParam("client_id", kakaoRestClient.getKakaoOAuth2Properties().getClientId())
@@ -25,6 +29,18 @@ public class KakaoOAuth2Service implements OAuth2Service {
                 .queryParam("response_type", "code")
                 .queryParam("scope", "profile_nickname, profile_image, account_email")
                 .toUriString();
+    }
+
+    @Override
+    public User getOAuth2User(OAuth2RequestDto oAuth2RequestDto) {
+        KakaoOAuth2User kakaoOAuth2User = getKakaoOAuth2User(oAuth2RequestDto.getAccessToken());
+
+        return User.builder()
+                .providerId(kakaoOAuth2User.getId())
+                .provider(OAuth2ProviderTypes.KAKAO.name().toLowerCase())
+                .email(kakaoOAuth2User.getKakaoAccount().getEmail())
+                .nickName(kakaoOAuth2User.getKakaoAccount().getProfile().getNickname())
+                .build();
     }
 
     public KakaoOAuth2Token getOAuth2Token(KakaoOAuth2TokenForm kakaoOAuth2TokenForm) {

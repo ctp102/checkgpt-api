@@ -5,13 +5,12 @@ import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 
-@ConfigurationProperties("coinmarketcap")
+@ConfigurationProperties("jwt")
 @ConfigurationPropertiesBinding
 @Getter
 @AllArgsConstructor
-public class CoinMarketCapProperties {
+public class JwtProperties {
 
-    private String endPoint;
-    private String xCmcProApiKey;
+    private String accessPrivateKey;
 
 }

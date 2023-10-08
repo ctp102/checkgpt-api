@@ -21,17 +21,19 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public void joinUser(User user) {
+    public User joinUser(User user) {
 
-        User findUser = userRepository.findByProviderIdAndProvider(user.getProviderId(), user.getProvider());
+        User foundUser = userRepository.findByProviderIdAndProvider(user.getProviderId(), user.getProvider());
 
-        if (findUser != null) {
+        if (foundUser != null) {
             log.info("이미 등록된 회원입니다. provider: {}, email: {}", user.getProvider(), user.getEmail());
-            return;
+            return foundUser;
         }
 
         User savedUser = userRepository.save(user);
         log.info("회원가입이 완료되었습니다. provider: {}, email: {}", savedUser.getProvider(), savedUser.getEmail());
+
+        return savedUser;
     }
 
     public Page<UserResponseDto> getUserList(Pageable pageable) {

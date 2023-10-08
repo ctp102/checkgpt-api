@@ -1,14 +1,22 @@
 package io.hexbit.api.utils;
 
+가import io.hexbit.api.security.domain.AuthTokenWrapper;
+import io.hexbit.core.user.domain.UserSessionDevice;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 @Component
 public class WebAuthUtils {
 
-//    @Autowired
-//    private JwtUtils jwtUtils;
+    @Autowired
+    private JwtUtils jwtUtils;
+
+    @Autowired
+    private WebUtils webUtils;
 
     public WebAuthUtils() {
     }
@@ -32,43 +40,23 @@ public class WebAuthUtils {
 //        return (apiKey != null) ? apiAuthTokens.stream().filter(x -> x.getApiKey().equals(apiKey)).findFirst().orElse(null) : null;
 //    }
 
-//    public FrontAuthToken getFrontAuthToken(HttpServletRequest request) {
-//        String jwtToken = getHeader(request, encodeAuthTokenName("FRONTAUTH")); // RlJPTlRBVVRI
-//        if (jwtToken == null) {
-//            return null;
-//        }
-//        return gearJwtUtils.parseFrontJwt(jwtToken);
-//    }
-
-//    public SessionDevice getSessionDevice(HttpServletRequest request) {
-//
-//        SessionDeviceDomain sessionDeviceDomain = new SessionDeviceDomain();
-//        sessionDeviceDomain.setAppVersion(getAppVersion(request));
-//        sessionDeviceDomain.setUserAgent(request.getHeader("User-Agent"));
-//
-//        return sessionDeviceDomain;
-//    }
-
-    public String getAuthorizationBearerJwt(HttpServletRequest request) {
-        String authorizationHeader = getHeader(request, "Authorization");
-
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            return null;
-        }
-        // "Bearer " 다음 문자열부터 JWT 추출
-        return authorizationHeader.substring(7);
+    public UserSessionDevice getUserSessionDevice(HttpServletRequest request) {
+        return UserSessionDevice.builder()
+                .deviceUUID(getAppDeviceUuid(request))
+                .deviceToken(getAppDeviceToken(request))
+                .deviceLastAccessIp(WebUtils.getClientIpAddr(request))
+                .deviceLangCd(getAppLanguage(request))
+                .deviceAppVersion(getAppVersion(request))
+                .userAgent(getUserAgent(request))
+                .build();
     }
 
     public String getAppVersion(HttpServletRequest request) {
-        return StringUtils.defaultIfBlank(getHeader(request, "App-Version"), "0.1.0");
+        return StringUtils.defaultIfBlank(getHeader(request, "App-Version"), "0.0.1");
     }
 
     public String getAppLanguage(HttpServletRequest request) {
         return StringUtils.defaultIfBlank(getHeader(request, "App-Language"), "en");
-    }
-
-    public String getLocale(HttpServletRequest request) {
-        return StringUtils.defaultIfBlank(getHeader(request, "locale"), "en");
     }
 
     public String getAppDeviceUuid(HttpServletRequest request) {
@@ -84,19 +72,19 @@ public class WebAuthUtils {
     }
 
     public String getAuthorization(HttpServletRequest request) {
-        return getHeader(request, "Authorization");
+        return getHeader(request, HttpHeaders.AUTHORIZATION);
     }
 
-    public String getAppDeviceCurrency(HttpServletRequest request) {
-        return StringUtils.defaultIfBlank(getHeader(request, "App-Device-Currency"), "USD").toUpperCase();
+    public String getUserAgent(HttpServletRequest request) {
+        return StringUtils.defaultIfBlank(getHeader(request, HttpHeaders.USER_AGENT), "Unknown");
     }
 
     public String getHeader(HttpServletRequest request, String key) {
-        String token = getHeaderValue(request, key);
-        if (StringUtils.isBlank(token)) {
-            token = getCookieValue(request, key);
+        String value = getHeaderValue(request, key);
+        if (StringUtils.isBlank(value)) {
+            value = getCookieValue(request, key);
         }
-        return token;
+        return value;
     }
 
     private String getHeaderValue(HttpServletRequest request, String key) {
@@ -108,11 +96,25 @@ public class WebAuthUtils {
     }
 
     private String getCookieValue(HttpServletRequest request, String key) {
-//        Cookie tokenCookie = GearWebUtils.getCookie(request, key);
-//        if (tokenCookie != null && tokenCookie.getValue() != null) {
-//            return tokenCookie.getValue();
-//        }
+        Cookie tokenCookie = WebUtils.getCookie(request, key);
+        if (tokenCookie != null && tokenCookie.getValue() != null) {
+            return tokenCookie.getValue();
+        }
         return null;
+    }
+
+    @Deprecated
+    public AuthTokenWrapper parseAuthToken(HttpServletRequest request) {
+        String token = getAuthToken(request);
+        if (token == null) {
+            return null;
+        }
+        return jwtUtils.parseAuthToken(token);
+    }
+
+    public AuthTokenWrapper parseAuthToken(String bearerToken) {
+        bearerToken = StringUtils.removeStart(bearerToken, "Bearer ");
+        return jwtUtils.parseAuthToken(bearerToken);
     }
 
 }

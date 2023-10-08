@@ -8,11 +8,18 @@ import java.util.Arrays;
 @Getter
 public enum ErrorCodes implements CustomResponseCodes {
 
-    NOT_MATCH_OAUTH2_PROVIDER               (400, "일치하는 OAuth2 Provider가 없습니다."),
+    NOT_REGISTERED_OAUTH2_PROVIDER          (400, "등록되지 않은 OAuth2 Provide"),
+    JWT_TOKEN_EXPIRED                       (400, "JWT 토큰 만료"),
+    JWT_TOKEN_NOT_SUPPORTED                 (400, "지원하지 않는 JWT 토큰"),
+    JWT_TOKEN_MALFORMED                     (400, "조작된 JWT 토큰"),
+    JWT_TOKEN_SIGNATURE_ERROR               (400, "JWT 토큰 서명 오류"),
+    JWT_TOKEN_ILLEGAL_ARGUMENT              (400, "JWT 토큰 잘못된 인자"),
+    JWT_TOKEN_EXCEPTION                     (400, "JWT 토큰 예외 발생"),
 
-    NOT_EXISTS_USER                         (404, "존재하지 않는 사용자입니다."),
 
-    INTERNAL_SERVER_ERROR                   (500, "예상치 못한 에러가 발생했습니다.")
+    NOT_EXISTS_USER                         (404, "존재하지 않는 사용자"),
+
+    INTERNAL_SERVER_ERROR                   (500, "예상치 못한 에러가 발생")
     ;
 
     private final int number;

@@ -36,4 +36,4 @@ out/
 ### VS Code ###
 .vscode/
 
-hexbit-core/src/test/java/io/hexbit/core/common/config/JasyptConfig.java
+README.md

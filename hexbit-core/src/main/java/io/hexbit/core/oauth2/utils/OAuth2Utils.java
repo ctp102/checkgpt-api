@@ -1,19 +1,11 @@
 package io.hexbit.core.oauth2.utils;
 
-import io.hexbit.core.common.exception.CustomBadRequestException;
-import io.hexbit.core.oauth2.enums.OAuth2ProviderTypes;
-import io.hexbit.core.common.enums.ErrorCodes;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.util.UriComponentsBuilder;
 
 public class OAuth2Utils {
 
     public static String getRedirectURI(HttpServletRequest request, String oAuth2Provider, boolean encode) {
-
-        OAuth2ProviderTypes oAuth2ProviderTypes = OAuth2ProviderTypes.findByName(oAuth2Provider);
-        if (oAuth2ProviderTypes == null) {
-            throw new CustomBadRequestException(ErrorCodes.NOT_MATCH_OAUTH2_PROVIDER.getNumber(), ErrorCodes.NOT_MATCH_OAUTH2_PROVIDER.getMessage());
-        }
 
         if (encode) {
             return UriComponentsBuilder

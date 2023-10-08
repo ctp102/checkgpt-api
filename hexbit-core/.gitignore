@@ -37,4 +37,4 @@ out/
 .vscode/
 
 
-src/test/java/io/hexbit/core/common/config/JasyptConfig.java
+src/test/java/io/hexbit/core/common/config/JasyptConfigTest.java
