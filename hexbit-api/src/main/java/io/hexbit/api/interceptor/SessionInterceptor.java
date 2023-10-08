@@ -1,7 +1,10 @@
 package io.hexbit.api.interceptor;
 
 import io.hexbit.api.interceptor.annotation.InterceptorExclude;
+import io.hexbit.api.security.domain.AuthTokenWrapper;
 import io.hexbit.api.utils.WebAuthUtils;
+import io.hexbit.api.utils.WebUtils;
+import io.hexbit.core.user.domain.UserSessionDevice;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -29,27 +32,26 @@ public class SessionInterceptor implements HandlerInterceptor {
                 return HandlerInterceptor.super.preHandle(request, response, handler);
             }
 
+            // Client JWT 파싱
+            String clientBearerJwt = webAuthUtils.getAuthorization(request);
+            if (clientBearerJwt != null) {
+                AuthTokenWrapper authTokenWrapper = webAuthUtils.parseAuthToken(clientBearerJwt);
+                request.setAttribute("authTokenWrapper", authTokenWrapper);
+            }
+
             // User 접속 Device
-//            SessionDevice sessionDevice = webAuthUtils.getSessionDevice(request);
-//            request.setAttribute("sessionDevice", sessionDevice);
+            UserSessionDevice userSessionDevice = webAuthUtils.getUserSessionDevice(request);
+            request.setAttribute("userSessionDevice", userSessionDevice);
 
             // 기본 api key
 //            ApiAuthToken apiAuthToken = webAuthUtils.getApiAuthToken(request);
 //            request.setAttribute("apiAuthToken", apiAuthToken);
 
-            // 언어 설정
-//            String language = webAuthUtils.getAppLanguage(request);
-//            request.setAttribute("language", language);
+            String clientIp = WebUtils.getClientIpAddr(request);
+            String userAgent = webAuthUtils.getUserAgent(request);
+            String requestUrl = request.getRequestURL().append(WebUtils.getRequestQueryString(request)).toString();
+            log.info("[APIS][{}] Request URL : {}, IP : {}, User-Agent : {}", request.getMethod(), requestUrl, clientIp, userAgent);
 
-            // 로케일 언어 설정
-//            String locale = webAuthUtils.getLocale(request);
-//            request.setAttribute("locale", locale);
-
-//            String clientIpAddr = GearWebUtils.getClientIpAddr(request);
-//            String userAgent = request.getHeader("User-Agent");
-//            String requestUrl = request.getRequestURL().append(GearWebUtils.getRequestQueryString(request)).toString();
-//            log.info("[APIS][{}] Request URL : {}, IP : {}, User-Agent : {}", request.getMethod(), requestUrl, clientIpAddr, userAgent);
-//
             // TODO: [2023/09/28, jh.cho] 추후 사용자 세션 로그 저장
         }
         return HandlerInterceptor.super.preHandle(request, response, handler);
