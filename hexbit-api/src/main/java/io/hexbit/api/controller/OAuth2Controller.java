@@ -1,6 +1,8 @@
 package io.hexbit.api.controller;
 
+import io.hexbit.api.security.annotation.ClientRequest;
 import io.hexbit.api.security.annotation.Secured;
+import io.hexbit.api.security.resolver.WebRequest;
 import io.hexbit.api.utils.JwtUtils;
 import io.hexbit.core.common.response.CustomResponse;
 import io.hexbit.core.oauth2.domain.KakaoOAuth2AuthorizationResponse;
@@ -15,7 +17,6 @@ import io.hexbit.core.oauth2.utils.OAuth2Utils;
 import io.hexbit.core.user.domain.User;
 import io.hexbit.core.user.dto.UserResponseDto;
 import io.hexbit.core.user.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -43,6 +44,7 @@ public class OAuth2Controller {
     @ResponseBody
     @PostMapping(value = "/api/v1/oauth2/{oAuth2Provider}/auth-token", consumes = MediaType.APPLICATION_JSON_VALUE)
     public CustomResponse createJwt(
+            @ClientRequest WebRequest webRequest,
             @RequestBody OAuth2RequestDto oAuth2RequestDto,
             @PathVariable String oAuth2Provider) {
 
@@ -59,11 +61,7 @@ public class OAuth2Controller {
         // 4. 회원 정보로 jwt 토큰 생성
         String authToken = jwtUtils.createJwt(savedUser);
 
-        UserResponseDto userResponseDto = UserResponseDto.builder()
-                .userId(savedUser.getUserId())
-                .email(savedUser.getEmail())
-                .nickName(savedUser.getNickName())
-                .build();
+        UserResponseDto userResponseDto = UserResponseDto.of(savedUser);
 
         // 5. jwt 토큰 리턴
         return new CustomResponse.Builder()
@@ -76,13 +74,13 @@ public class OAuth2Controller {
      */
     @GetMapping("/api/v1/oauth2/{oAuth2Provider}/authorize")
     public String getOAuth2AuthorizationURI(
-            @PathVariable String oAuth2Provider,
-            HttpServletRequest request) {
+            @ClientRequest WebRequest webRequest,
+            @PathVariable String oAuth2Provider) {
 
         OAuth2ProviderTypes.checkRegisteredOAuth2Provider(oAuth2Provider);
         OAuth2Service oAuth2Service = oAuth2ServiceMap.get(oAuth2Provider + "OAuth2Service");
 
-        String redirectURI = OAuth2Utils.getRedirectURI(request, oAuth2Provider, false);
+        String redirectURI = OAuth2Utils.getRedirectURI(webRequest.getRequest(), oAuth2Provider, false);
         String oAuth2AuthorizationURI = oAuth2Service.getOAuth2AuthorizationURI(redirectURI);
 
         log.debug("[getOAuth2AuthorizationURI] redirectURI = {}, oAuth2AuthorizationURI = {}", redirectURI, oAuth2AuthorizationURI);
@@ -94,7 +92,7 @@ public class OAuth2Controller {
      */
     @GetMapping("/api/v1/oauth2/kakao/callback")
     public String kakaoLoginAndJoin(
-            HttpServletRequest request,
+            @ClientRequest WebRequest webRequest,
             Model model,
             @ModelAttribute KakaoOAuth2AuthorizationResponse kakaoOAuth2AuthorizationResponse) {
 
@@ -103,7 +101,7 @@ public class OAuth2Controller {
             return "profile";
         }
 
-        String encodedRedirectURI = OAuth2Utils.getRedirectURI(request, OAuth2ProviderTypes.KAKAO.name().toLowerCase(), true);
+        String encodedRedirectURI = OAuth2Utils.getRedirectURI(webRequest.getRequest(), OAuth2ProviderTypes.KAKAO.name().toLowerCase(), true);
         KakaoOAuth2TokenForm kakaoOAuth2TokenForm = new KakaoOAuth2TokenForm();
         kakaoOAuth2TokenForm.setRedirect_uri(encodedRedirectURI);
         kakaoOAuth2TokenForm.setCode(kakaoOAuth2AuthorizationResponse.getCode());

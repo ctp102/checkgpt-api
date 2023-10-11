@@ -1,6 +1,8 @@
 package io.hexbit.api.security.resolver;
 
 import io.hexbit.api.security.annotation.ClientRequest;
+import io.hexbit.api.security.domain.AuthTokenWrapper;
+import io.hexbit.core.user.domain.UserSessionDevice;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -25,10 +27,10 @@ public class WebRequestArgumentResolver implements HandlerMethodArgumentResolver
             HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
             Map<String, String> clientMap = getClientMap(request);
 
-//            ApiAuthToken apiAuthToken = (ApiAuthToken) request.getAttribute("apiAuthToken");
-//            SessionDevice sessionDevice = (SessionDevice) request.getAttribute("sessionDevice");
+            AuthTokenWrapper authTokenWrapper = (AuthTokenWrapper) request.getAttribute("authTokenWrapper");
+            UserSessionDevice userSessionDevice = (UserSessionDevice) request.getAttribute("userSessionDevice");
 
-            return new WebRequest(request, clientMap);
+            return new WebRequest(request, clientMap, authTokenWrapper, userSessionDevice);
         }
         return null;
     }
@@ -42,10 +44,6 @@ public class WebRequestArgumentResolver implements HandlerMethodArgumentResolver
 
         if (request.getHeader("User-Agent") != null) {
             clientMap.put("User-Agent", request.getHeader("User-Agent"));
-        }
-
-        if (request.getAttribute("locale") != null) {
-            clientMap.put("locale", (String) request.getAttribute("locale"));
         }
 
         return clientMap;

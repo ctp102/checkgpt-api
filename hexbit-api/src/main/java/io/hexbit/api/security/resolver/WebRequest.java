@@ -1,10 +1,11 @@
 package io.hexbit.api.security.resolver;
 
+import io.hexbit.api.security.domain.AuthTokenWrapper;
+import io.hexbit.core.user.domain.UserSessionDevice;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Locale;
 import java.util.Map;
 
 @Getter
@@ -13,15 +14,11 @@ public class WebRequest {
 
     private final HttpServletRequest request;
     private final Map<String, String> clientMap;
-//    private final ApiAuthToken apiAuthToken;
-//    private final SessionDevice sessionDevice;
+    private final AuthTokenWrapper authTokenWrapper;
+    private final UserSessionDevice userSessionDevice;
 
     public String getReferer() {
         return clientMap.get("Referer");
-    }
-
-    public Locale getLocale() {
-        return new Locale(clientMap.get("locale"));
     }
 
     public String getUserAgent() {
@@ -29,7 +26,7 @@ public class WebRequest {
     }
 
     public Long getUserId() {
-        return null;
+        return authTokenWrapper.getUserId();
     }
 
 }
