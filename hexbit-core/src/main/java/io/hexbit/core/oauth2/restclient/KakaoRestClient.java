@@ -1,16 +1,20 @@
 package io.hexbit.core.oauth2.restclient;
 
-import io.hexbit.core.common.config.properties.KakaoOAuth2Properties;
-import io.hexbit.core.oauth2.domain.KakaoOAuth2Token;
-import io.hexbit.core.oauth2.domain.KakaoOAuth2Response;
-import io.hexbit.core.oauth2.domain.KakaoOAuth2User;
-import io.hexbit.core.oauth2.enums.KakaoApiTypes;
-import io.hexbit.core.oauth2.form.KakaoOAuth2TokenForm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.hexbit.core.book.domain.KakaoBookSearchResponse;
+import io.hexbit.core.book.enums.KakaoSearchApiTypes;
+import io.hexbit.core.book.form.KakaoBookForm;
+import io.hexbit.core.common.config.properties.KakaoOAuth2Properties;
+import io.hexbit.core.oauth2.domain.KakaoOAuth2Token;
+import io.hexbit.core.oauth2.domain.KakaoOAuth2User;
+import io.hexbit.core.oauth2.domain.KakaoResponse;
+import io.hexbit.core.oauth2.enums.KakaoLoginApiTypes;
+import io.hexbit.core.oauth2.form.KakaoOAuth2TokenForm;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -38,31 +42,50 @@ public class KakaoRestClient {
     /**
      * 카카오 OAuth2 AccessToken, RefreshToken 발급
      */
-    public KakaoOAuth2Response<KakaoOAuth2Token> getOAuth2Token(KakaoOAuth2TokenForm kakaoOAuth2TokenForm) {
+    public KakaoResponse<KakaoOAuth2Token> getOAuth2Token(KakaoOAuth2TokenForm kakaoOAuth2TokenForm) {
         kakaoOAuth2TokenForm.setClient_id(kakaoOAuth2Properties.getClientId());
         kakaoOAuth2TokenForm.setClient_secret(kakaoOAuth2Properties.getClientSecret());
 
-        return post(KakaoApiTypes.GET_TOKEN.getEndPoint(), kakaoOAuth2TokenForm, KakaoOAuth2Token.class);
+        return post(KakaoLoginApiTypes.GET_TOKEN.getEndPoint(), kakaoOAuth2TokenForm, KakaoOAuth2Token.class);
     }
 
     /**
      * 카카오 OAuth2 사용자 정보 조회
      */
-    public KakaoOAuth2Response<KakaoOAuth2User> getKakaoOAuth2User(String accessToken) {
+    public KakaoResponse<KakaoOAuth2User> getKakaoOAuth2User(String accessToken) {
         URI endPoint = UriComponentsBuilder
-                .fromUriString(KakaoApiTypes.GET_USER_INFO.getEndPoint())
+                .fromUriString(KakaoLoginApiTypes.GET_USER_INFO.getEndPoint())
                 .queryParam("secure_resource", true) // 이미지 URL 값 HTTPS 여부, true 설정 시 HTTPS 사용, 기본 값 false
                 .encode()
                 .build()
                 .toUri();
 
-        HttpHeaders httpHeaders = getHttpHeaders(accessToken);
+        HttpHeaders httpHeaders = getHttpHeadersForLogin(accessToken);
 
         return get(endPoint, httpHeaders, KakaoOAuth2User.class);
     }
 
-    public <T> KakaoOAuth2Response<T> get(URI uri, HttpHeaders httpHeaders, Class<T> responseType) {
-        KakaoOAuth2Response<T> kakaoOAuth2Response = new KakaoOAuth2Response<>();
+    /**
+     * 카카오 도서 검색
+     */
+    public KakaoResponse<KakaoBookSearchResponse> getKakaoSearchBook(KakaoBookForm kakaoBookForm, Pageable pageable) {
+        URI endPoint = UriComponentsBuilder
+                .fromUriString(KakaoSearchApiTypes.SEARCH_BOOK.getEndPoint())
+                .queryParam("query",    kakaoBookForm.getQuery())
+                .queryParam("sort",     kakaoBookForm.getSort())
+                .queryParam("target",   kakaoBookForm.getTarget())
+                .queryParam("page",     pageable.getPageNumber() + 1)
+                .queryParam("size",     pageable.getPageSize())
+                .encode()
+                .build()
+                .toUri();
+
+        HttpHeaders httpHeaders = getHttpHeadersForSearch(kakaoOAuth2Properties.getClientId());
+        return get(endPoint, httpHeaders, KakaoBookSearchResponse.class);
+    }
+
+    public <T> KakaoResponse<T> get(URI uri, HttpHeaders httpHeaders, Class<T> responseType) {
+        KakaoResponse<T> kakaoResponse = new KakaoResponse<>();
 
         RequestEntity<?> requestEntity = new RequestEntity<>(httpHeaders, HttpMethod.GET, uri);
 
@@ -75,30 +98,30 @@ public class KakaoRestClient {
             );
 
             if (isNotEmpty(responseEntity)) {
-                kakaoOAuth2Response.setData(objectMapper.convertValue(responseEntity.getBody(), responseType));
+                kakaoResponse.setData(objectMapper.convertValue(responseEntity.getBody(), responseType));
             }
         } catch (HttpStatusCodeException e) {
             log.error("[HttpStatusCodeException]: {} ", e.getMessage());
             try {
-                kakaoOAuth2Response.setError(objectMapper.readValue(e.getResponseBodyAsString(), responseType));
+                kakaoResponse.setError(objectMapper.readValue(e.getResponseBodyAsString(), responseType));
             } catch (JsonProcessingException ex) {
                 throw new RuntimeException(ex);
             }
         } catch (Exception e) {
             log.error("[Exception] ", e);
         }
-        return kakaoOAuth2Response;
+        return kakaoResponse;
     }
 
     // TODO: 2023/09/24  kakaoOAuth2TokenForm 이것만 받는데 전체적으로 받을 수 있도록 개선하기
-    public <T> KakaoOAuth2Response<T> post(String endPoint, KakaoOAuth2TokenForm kakaoOAuth2TokenForm, Class<T> responseType) {
+    public <T> KakaoResponse<T> post(String endPoint, KakaoOAuth2TokenForm kakaoOAuth2TokenForm, Class<T> responseType) {
 
-        HttpHeaders httpHeaders = getHttpHeaders();
+        HttpHeaders httpHeaders = getHttpHeadersForLogin();
         MultiValueMap<String, String> body = convertToMultiValueMap(kakaoOAuth2TokenForm);
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, httpHeaders);
 
-        KakaoOAuth2Response<T> kakaoOAuth2Response = new KakaoOAuth2Response<>();
+        KakaoResponse<T> kakaoResponse = new KakaoResponse<>();
 
         log.info("[POST] REST CALL: {}", endPoint);
 
@@ -111,12 +134,12 @@ public class KakaoRestClient {
             );
 
             if (isNotEmpty(responseEntity)) {
-                kakaoOAuth2Response.setData(objectMapper.convertValue(responseEntity.getBody(), responseType));
+                kakaoResponse.setData(objectMapper.convertValue(responseEntity.getBody(), responseType));
             }
         } catch (HttpStatusCodeException e) {
             log.error("[HttpStatusCodeException]: {} ", e.getMessage());
             try {
-                kakaoOAuth2Response.setError(objectMapper.readValue(e.getResponseBodyAsString(), responseType));
+                kakaoResponse.setError(objectMapper.readValue(e.getResponseBodyAsString(), responseType));
             } catch (JsonProcessingException ex) {
                 throw new RuntimeException(ex);
             }
@@ -124,23 +147,30 @@ public class KakaoRestClient {
             log.error("[Exception] ", e);
         }
 
-        return kakaoOAuth2Response;
+        return kakaoResponse;
     }
 
     private boolean isNotEmpty(ResponseEntity<?> response) {
         return response != null && response.getBody() != null && response.getStatusCode() == HttpStatus.OK;
     }
 
-    private HttpHeaders getHttpHeaders() {
+    private HttpHeaders getHttpHeadersForLogin() {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         return httpHeaders;
     }
 
-    private HttpHeaders getHttpHeaders(String accessKey) {
+    private HttpHeaders getHttpHeadersForLogin(String accessToken) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        httpHeaders.setBearerAuth(accessKey);
+        httpHeaders.setBearerAuth(accessToken);
+        return httpHeaders;
+    }
+
+    private HttpHeaders getHttpHeadersForSearch(String restApiKey) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        httpHeaders.add(HttpHeaders.AUTHORIZATION, "KakaoAK " + restApiKey);
         return httpHeaders;
     }
 

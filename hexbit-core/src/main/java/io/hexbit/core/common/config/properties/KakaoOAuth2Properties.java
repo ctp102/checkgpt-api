@@ -11,7 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesBindin
 @AllArgsConstructor
 public class KakaoOAuth2Properties {
 
-    private String clientId;
+    private String clientId; // restApiKey
     private String clientSecret;
 
 }

@@ -43,10 +43,6 @@ public class SessionInterceptor implements HandlerInterceptor {
             UserSessionDevice userSessionDevice = webAuthUtils.getUserSessionDevice(request);
             request.setAttribute("userSessionDevice", userSessionDevice);
 
-            // 기본 api key
-//            ApiAuthToken apiAuthToken = webAuthUtils.getApiAuthToken(request);
-//            request.setAttribute("apiAuthToken", apiAuthToken);
-
             String clientIp = WebUtils.getClientIpAddr(request);
             String userAgent = webAuthUtils.getUserAgent(request);
             String requestUrl = request.getRequestURL().append(WebUtils.getRequestQueryString(request)).toString();

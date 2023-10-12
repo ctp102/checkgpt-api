@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.springframework.http.HttpMethod;
 
 @Getter
-public enum KakaoApiTypes {
+public enum KakaoLoginApiTypes {
 
     GET_AUTHORIZATION_CODE  ("https://kauth.kakao.com/oauth/authorize", HttpMethod.GET,  "인가 코드 받기"),
     GET_TOKEN               ("https://kauth.kakao.com/oauth/token",     HttpMethod.GET,  "토큰 받기"),
@@ -22,7 +22,7 @@ public enum KakaoApiTypes {
     private final HttpMethod methodType;
     private final String description;
 
-    KakaoApiTypes(String endPoint, HttpMethod methodType, String description) {
+    KakaoLoginApiTypes(String endPoint, HttpMethod methodType, String description) {
         this.endPoint = endPoint;
         this.methodType = methodType;
         this.description = description;

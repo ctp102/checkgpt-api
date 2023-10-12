@@ -1,10 +1,10 @@
 package io.hexbit.core.oauth2.service;
 
-import io.hexbit.core.oauth2.domain.KakaoOAuth2Response;
 import io.hexbit.core.oauth2.domain.KakaoOAuth2Token;
 import io.hexbit.core.oauth2.domain.KakaoOAuth2User;
+import io.hexbit.core.oauth2.domain.KakaoResponse;
 import io.hexbit.core.oauth2.dto.OAuth2RequestDto;
-import io.hexbit.core.oauth2.enums.KakaoApiTypes;
+import io.hexbit.core.oauth2.enums.KakaoLoginApiTypes;
 import io.hexbit.core.oauth2.enums.OAuth2ProviderTypes;
 import io.hexbit.core.oauth2.form.KakaoOAuth2TokenForm;
 import io.hexbit.core.oauth2.restclient.KakaoRestClient;
@@ -23,7 +23,8 @@ public class KakaoOAuth2Service implements OAuth2Service {
 
     @Override
     public String getOAuth2AuthorizationURI(String redirectURI) {
-        return UriComponentsBuilder.fromUriString(KakaoApiTypes.GET_AUTHORIZATION_CODE.getEndPoint())
+
+        return UriComponentsBuilder.fromUriString(KakaoLoginApiTypes.GET_AUTHORIZATION_CODE.getEndPoint())
                 .queryParam("client_id", kakaoRestClient.getKakaoOAuth2Properties().getClientId())
                 .queryParam("redirect_uri", redirectURI)
                 .queryParam("response_type", "code")
@@ -33,23 +34,28 @@ public class KakaoOAuth2Service implements OAuth2Service {
 
     @Override
     public User getOAuth2User(OAuth2RequestDto oAuth2RequestDto) {
-        KakaoOAuth2User kakaoOAuth2User = getKakaoOAuth2User(oAuth2RequestDto.getAccessToken());
 
-        return User.builder()
-                .providerId(kakaoOAuth2User.getId())
-                .provider(OAuth2ProviderTypes.KAKAO.name().toLowerCase())
-                .email(kakaoOAuth2User.getKakaoAccount().getEmail())
-                .nickName(kakaoOAuth2User.getKakaoAccount().getProfile().getNickname())
-                .build();
+        KakaoOAuth2User kakaoOAuth2UserResponseData = getKakaoOAuth2User(oAuth2RequestDto.getAccessToken());
+
+        return User.of(
+                kakaoOAuth2UserResponseData.getId(),
+                OAuth2ProviderTypes.KAKAO.name().toLowerCase(),
+                kakaoOAuth2UserResponseData.getKakaoAccount().getEmail(),
+                kakaoOAuth2UserResponseData.getKakaoAccount().getProfile().getNickname()
+        );
     }
 
     public KakaoOAuth2Token getOAuth2Token(KakaoOAuth2TokenForm kakaoOAuth2TokenForm) {
-        KakaoOAuth2Response<KakaoOAuth2Token> oAuth2TokenResponse = kakaoRestClient.getOAuth2Token(kakaoOAuth2TokenForm);
+
+        KakaoResponse<KakaoOAuth2Token> oAuth2TokenResponse = kakaoRestClient.getOAuth2Token(kakaoOAuth2TokenForm);
+
         return oAuth2TokenResponse.getData();
     }
 
     public KakaoOAuth2User getKakaoOAuth2User(String accessToken) {
-        KakaoOAuth2Response<KakaoOAuth2User> kakaoOAuth2User = kakaoRestClient.getKakaoOAuth2User(accessToken);
-        return kakaoOAuth2User.getData();
+
+        KakaoResponse<KakaoOAuth2User> kakaoOAuth2UserResponse = kakaoRestClient.getKakaoOAuth2User(accessToken);
+
+        return kakaoOAuth2UserResponse.getData();
     }
 }

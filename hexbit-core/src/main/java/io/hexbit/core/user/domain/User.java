@@ -46,6 +46,15 @@ public class User extends BaseTimeEntity {
         this.nickName = nickName;
     }
 
+    public static User of(Long providerId, String provider, String email, String nickName) {
+        return User.builder()
+                .providerId(providerId)
+                .provider(provider)
+                .email(email)
+                .nickName(nickName)
+                .build();
+    }
+
     public void addSessionDevice(UserSessionDevice userSessionDevice) {
         this.userSessionDevices.add(userSessionDevice);
         userSessionDevice.addUser(this);
