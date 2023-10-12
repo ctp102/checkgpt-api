@@ -1,5 +1,6 @@
 package io.hexbit.core.book.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,8 @@ public class Book {
     private String contents;        // 도서 소개
     private String url;             // 도서 상세 URL
     private String isbn;            // 국제 표준 도서번호, ISBN10 또는 ISBN13
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") // LocalDateTime 배열 변환 이슈 제거
     private LocalDateTime datetime; // 도서 출판 날짜, ISO 8601 형식
     private List<String> authors;     // 도서 저자 리스트
     private String publisher;         // 도서 출판사
