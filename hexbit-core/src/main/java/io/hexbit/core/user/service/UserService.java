@@ -5,12 +5,14 @@ import io.hexbit.core.common.exception.CustomNotFoundException;
 import io.hexbit.core.user.domain.User;
 import io.hexbit.core.user.dto.UserResponseDto;
 import io.hexbit.core.user.repository.UserRepository;
+import io.hexbit.core.user.repository.UserSearchForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +23,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    @Transactional
     public User joinUser(User user) {
 
         User foundUser = userRepository.findByProviderIdAndProvider(user.getProviderId(), user.getProvider());
@@ -36,8 +39,11 @@ public class UserService {
         return savedUser;
     }
 
-    public Page<UserResponseDto> getUserList(Pageable pageable) {
-        Page<User> result = userRepository.findAll(pageable);
+    @Transactional(readOnly = true)
+    public Page<UserResponseDto> getUserList(UserSearchForm userSearchForm, Pageable pageable) {
+
+        Page<User> result = userRepository.findAll(userSearchForm, pageable);
+
         List<UserResponseDto> userResponseDtoList = result.getContent().stream()
                 .map(UserResponseDto::of)
                 .toList();
@@ -45,7 +51,9 @@ public class UserService {
         return new PageImpl<>(userResponseDtoList, pageable, result.getTotalElements());
     }
 
+    @Transactional(readOnly = true)
     public User getUser(Long userId) {
+
         User user = userRepository.findById(userId).orElse(null);
 
         if (user == null) {

@@ -38,3 +38,5 @@ out/
 
 
 src/test/java/io/hexbit/core/common/config/JasyptConfigTest.java
+src/main/generated/
+src/test/generated_tests/

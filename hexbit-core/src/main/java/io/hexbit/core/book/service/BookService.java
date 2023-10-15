@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class BookService {
 
     private final KakaoRestClient kakaoRestClient;
 
+    @Transactional
     public Page<Book> searchBook(KakaoBookForm kakaoBookForm, Pageable pageable) {
 
         KakaoResponse<KakaoBookSearchResponse> kakaoBookSearchResponse = kakaoRestClient.getKakaoSearchBook(kakaoBookForm, pageable);
