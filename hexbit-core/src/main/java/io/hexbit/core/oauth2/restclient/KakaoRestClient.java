@@ -24,6 +24,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.lang.reflect.Field;
 import java.net.URI;
+import java.util.Map;
 
 @Slf4j
 @Getter
@@ -84,6 +85,7 @@ public class KakaoRestClient {
         return get(endPoint, httpHeaders, KakaoBookSearchResponse.class);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> KakaoResponse<T> get(URI uri, HttpHeaders httpHeaders, Class<T> responseType) {
         KakaoResponse<T> kakaoResponse = new KakaoResponse<>();
 
@@ -103,7 +105,7 @@ public class KakaoRestClient {
         } catch (HttpStatusCodeException e) {
             log.error("[HttpStatusCodeException]: {} ", e.getMessage());
             try {
-                kakaoResponse.setError(objectMapper.readValue(e.getResponseBodyAsString(), responseType));
+                kakaoResponse.setError(objectMapper.readValue(e.getResponseBodyAsString(), Map.class));
             } catch (JsonProcessingException ex) {
                 throw new RuntimeException(ex);
             }
@@ -114,6 +116,7 @@ public class KakaoRestClient {
     }
 
     // TODO: 2023/09/24  kakaoOAuth2TokenForm 이것만 받는데 전체적으로 받을 수 있도록 개선하기
+    @SuppressWarnings("unchecked")
     public <T> KakaoResponse<T> post(String endPoint, KakaoOAuth2TokenForm kakaoOAuth2TokenForm, Class<T> responseType) {
 
         HttpHeaders httpHeaders = getHttpHeadersForLogin();
@@ -139,7 +142,7 @@ public class KakaoRestClient {
         } catch (HttpStatusCodeException e) {
             log.error("[HttpStatusCodeException]: {} ", e.getMessage());
             try {
-                kakaoResponse.setError(objectMapper.readValue(e.getResponseBodyAsString(), responseType));
+                kakaoResponse.setError(objectMapper.readValue(e.getResponseBodyAsString(), Map.class));
             } catch (JsonProcessingException ex) {
                 throw new RuntimeException(ex);
             }

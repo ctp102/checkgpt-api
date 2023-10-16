@@ -8,6 +8,7 @@ import io.hexbit.core.user.domain.User;
 import io.hexbit.core.user.dto.UserResponseDto;
 import io.hexbit.core.user.repository.UserSearchForm;
 import io.hexbit.core.user.service.UserService;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -41,7 +42,7 @@ public class UserRestController {
     @GetMapping("/api/v1/users/{userId}")
     public CustomResponse getUser(
             @ClientRequest WebRequest webRequest,
-            @PathVariable Long userId) {
+            @PathVariable @Min(1) Long userId) {
 
         User item = userService.getUser(userId);
 

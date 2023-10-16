@@ -17,6 +17,7 @@ import io.hexbit.core.oauth2.utils.OAuth2Utils;
 import io.hexbit.core.user.domain.User;
 import io.hexbit.core.user.dto.UserResponseDto;
 import io.hexbit.core.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -45,7 +46,7 @@ public class OAuth2Controller {
     @PostMapping(value = "/api/v1/oauth2/{oAuth2Provider}/auth-token", consumes = MediaType.APPLICATION_JSON_VALUE)
     public CustomResponse createJwt(
             @ClientRequest WebRequest webRequest,
-            @RequestBody OAuth2RequestDto oAuth2RequestDto,
+            @RequestBody @Valid OAuth2RequestDto oAuth2RequestDto,
             @PathVariable String oAuth2Provider) {
 
         // 1. oAuth2Provider 검증

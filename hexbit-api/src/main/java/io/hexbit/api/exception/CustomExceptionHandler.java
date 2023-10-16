@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -19,6 +20,13 @@ public class CustomExceptionHandler {
     @ExceptionHandler(BindException.class)
     public CustomResponse bindException(BindException e) {
         log.error("[BindException 발생] {}", e.getBindingResult().getAllErrors().get(0).getDefaultMessage(), e);
+        return getCustomResponse(e);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public CustomResponse methodArgumentNotValidException(MethodArgumentNotValidException e) {
+        log.error("[MethodArgumentNotValidException 발생] {}", e.getBindingResult().getAllErrors().get(0).getDefaultMessage(), e);
         return getCustomResponse(e);
     }
 

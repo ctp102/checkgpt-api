@@ -4,19 +4,12 @@ jar { enabled = true }
 dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
-    // httpclient
     implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
-
-    // jasypt
     implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
-
-    // p6spy
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0'
 
-    // h2 db
+    // DB
     runtimeOnly 'com.h2database:h2'
-
-    // mysql
     implementation 'mysql:mysql-connector-java:8.0.32'
 
     // querydsl

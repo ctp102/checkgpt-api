@@ -15,7 +15,7 @@ public enum ErrorCodes implements CustomResponseCodes {
     JWT_TOKEN_SIGNATURE_ERROR               (400, "JWT 토큰 서명 오류"),
     JWT_TOKEN_ILLEGAL_ARGUMENT              (400, "JWT 토큰 잘못된 인자"),
     JWT_TOKEN_EXCEPTION                     (400, "JWT 토큰 예외 발생"),
-
+    EMPTY_ACCESS_TOKEN                      (400, "AccessToken 누락"),
 
     NOT_EXISTS_USER                         (404, "존재하지 않는 사용자"),
 

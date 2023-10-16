@@ -1,5 +1,7 @@
 package io.hexbit.core.oauth2.service;
 
+import io.hexbit.core.common.enums.ErrorCodes;
+import io.hexbit.core.common.exception.CustomException;
 import io.hexbit.core.oauth2.domain.KakaoOAuth2Token;
 import io.hexbit.core.oauth2.domain.KakaoOAuth2User;
 import io.hexbit.core.oauth2.domain.KakaoResponse;
@@ -49,12 +51,26 @@ public class KakaoOAuth2Service implements OAuth2Service {
 
         KakaoResponse<KakaoOAuth2Token> oAuth2TokenResponse = kakaoRestClient.getOAuth2Token(kakaoOAuth2TokenForm);
 
+        if (oAuth2TokenResponse.getData() == null || oAuth2TokenResponse.getError() != null) {
+            throw new CustomException(
+                    ErrorCodes.INTERNAL_SERVER_ERROR.getNumber(),
+                    oAuth2TokenResponse.getError().getOrDefault("msg", ErrorCodes.INTERNAL_SERVER_ERROR.getMessage())
+            );
+        }
+
         return oAuth2TokenResponse.getData();
     }
 
     public KakaoOAuth2User getKakaoOAuth2User(String accessToken) {
 
         KakaoResponse<KakaoOAuth2User> kakaoOAuth2UserResponse = kakaoRestClient.getKakaoOAuth2User(accessToken);
+
+        if (kakaoOAuth2UserResponse.getData() == null || kakaoOAuth2UserResponse.getError() != null) {
+            throw new CustomException(
+                    ErrorCodes.INTERNAL_SERVER_ERROR.getNumber(),
+                    kakaoOAuth2UserResponse.getError().getOrDefault("msg", ErrorCodes.INTERNAL_SERVER_ERROR.getMessage())
+            );
+        }
 
         return kakaoOAuth2UserResponse.getData();
     }
