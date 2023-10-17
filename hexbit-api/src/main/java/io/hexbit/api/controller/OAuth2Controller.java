@@ -46,7 +46,7 @@ public class OAuth2Controller {
     @PostMapping(value = "/api/v1/oauth2/{oAuth2Provider}/auth-token", consumes = MediaType.APPLICATION_JSON_VALUE)
     public CustomResponse createJwt(
             @ClientRequest WebRequest webRequest,
-            @RequestBody @Valid OAuth2RequestDto oAuth2RequestDto,
+            @Valid @RequestBody OAuth2RequestDto oAuth2RequestDto,
             @PathVariable String oAuth2Provider) {
 
         // 1. oAuth2Provider 검증

@@ -3,9 +3,11 @@ package io.hexbit.core.common.config;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.hexbit.core.common.config.properties.KakaoOAuth2Properties;
 import io.hexbit.core.common.config.properties.RestTemplateProperties;
+import io.hexbit.core.common.jackson.StringStripJsonDeserializer;
 import io.hexbit.core.oauth2.restclient.KakaoRestClient;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
@@ -68,7 +70,6 @@ public class CoreConfig {
 
         // 3. RestTemplate
         RestTemplate restTemplate = new RestTemplate(factory);
-//        RestTemplate restTemplate = new RestTemplate();
         restTemplate.setMessageConverters(httpMessageConverters);
         return restTemplate;
     }
@@ -78,9 +79,15 @@ public class CoreConfig {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.disable(SerializationFeature.INDENT_OUTPUT);
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-
         objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.registerModule(customJsonDeserializeModule());
         return objectMapper;
+    }
+
+    private SimpleModule customJsonDeserializeModule() {
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(String.class, new StringStripJsonDeserializer());
+        return module;
     }
 
     @Bean
