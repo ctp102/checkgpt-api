@@ -11,7 +11,9 @@ import org.hibernate.annotations.BatchSize;
 import java.util.List;
 
 @Entity
-@Table(name = "USERS")
+@Table(name = "USERS", uniqueConstraints = {
+        @UniqueConstraint(name = "UK_USERS_PROVIDER_ID", columnNames = {"PROVIDER_ID", "PROVIDER"})
+})
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity {

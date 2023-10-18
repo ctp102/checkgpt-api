@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 public class UserSessionDevice extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DEVICE_UUID")
     private String deviceUUID;
 
