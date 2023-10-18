@@ -1,0 +1,31 @@
+rest:
+  template:
+    connection-manager:
+      default-max-per-route: 100
+      max-total: 100
+    client-http-request:
+      evict-idle-connections: 10
+      connect-timeout: 30000
+      read-timeout: 30000
+
+--- # default profile
+spring:
+  profiles:
+    active: local
+
+--- # local
+spring:
+  config:
+    activate:
+      on-profile: local
+
+--- # dev
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+---
+spring:
+  profiles:
+    include: "core"
