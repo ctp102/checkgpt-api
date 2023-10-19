@@ -1,13 +1,14 @@
 package io.hexbit.core.user.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.hexbit.core.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
 
@@ -30,18 +31,17 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        // TODO: Deprecated 된 메서드 사용하지 않기
-        long totalCount = queryFactory
-                .selectFrom(user)
+        JPAQuery<Long> countQuery = queryFactory
+                .select(user.count())
+                .from(user)
                 .where(
                         likeEmail(userSearchForm.getEmail()),
                         likeNickName(userSearchForm.getNickName())
                 )
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetchCount();
+                .limit(pageable.getPageSize());
 
-        return new PageImpl<>(members, pageable, totalCount);
+        return PageableExecutionUtils.getPage(members, pageable, countQuery::fetchCount);
     }
 
     public BooleanExpression likeEmail(String email) {
