@@ -19,6 +19,21 @@ spring:
     activate:
       on-profile: local
 
+#logging:
+#  level:
+#    web: debug
+#  pattern:
+#    console: "[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{36} - %msg%n"
+#    file: "[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{36} - %msg%n"
+#    level: "%5p"
+#  file:
+##    path: "./logs"
+#    name: "/logs/server.log"
+#  logback:
+#    rollingpolicy:
+#      max-history: 30
+#      max-file-size: 10MB
+
 --- # dev
 spring:
   config:
