@@ -81,7 +81,7 @@ public class OAuth2Controller {
         OAuth2ProviderTypes.checkRegisteredOAuth2Provider(oAuth2Provider);
         OAuth2Service oAuth2Service = oAuth2ServiceMap.get(oAuth2Provider + "OAuth2Service");
 
-        String redirectURI = OAuth2Utils.getRedirectURI(webRequest.getRequest(), oAuth2Provider, false);
+        String redirectURI = OAuth2Utils.getRedirectURI(webRequest.request(), oAuth2Provider, false);
         String oAuth2AuthorizationURI = oAuth2Service.getOAuth2AuthorizationURI(redirectURI);
 
         log.debug("[getOAuth2AuthorizationURI] redirectURI = {}, oAuth2AuthorizationURI = {}", redirectURI, oAuth2AuthorizationURI);
@@ -102,7 +102,7 @@ public class OAuth2Controller {
             return "profile";
         }
 
-        String encodedRedirectURI = OAuth2Utils.getRedirectURI(webRequest.getRequest(), OAuth2ProviderTypes.KAKAO.name().toLowerCase(), true);
+        String encodedRedirectURI = OAuth2Utils.getRedirectURI(webRequest.request(), OAuth2ProviderTypes.KAKAO.name().toLowerCase(), true);
         KakaoOAuth2TokenForm kakaoOAuth2TokenForm = new KakaoOAuth2TokenForm();
         kakaoOAuth2TokenForm.setRedirect_uri(encodedRedirectURI);
         kakaoOAuth2TokenForm.setCode(kakaoOAuth2AuthorizationResponse.getCode());
