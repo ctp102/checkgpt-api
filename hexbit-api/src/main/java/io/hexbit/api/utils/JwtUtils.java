@@ -5,7 +5,6 @@ import io.hexbit.core.common.config.properties.JwtProperties;
 import io.hexbit.core.common.enums.ErrorCodes;
 import io.hexbit.core.common.exception.CustomBadRequestException;
 import io.hexbit.core.common.exception.CustomException;
-import io.hexbit.core.user.domain.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
@@ -32,7 +31,7 @@ public class JwtUtils {
 
     private static final long ONE_DAY = 1000L * 60 * 60 * 24;
 
-    public String createJwt(User user) {
+    public String createJwt(Long userId, String email) {
         long nowMillis = System.currentTimeMillis();
         long expMillis = nowMillis + ONE_DAY;
         Date expirationDate = new Date(expMillis);
@@ -41,8 +40,8 @@ public class JwtUtils {
         claims.put(Claims.ID, UUID.randomUUID().toString());
         claims.put(Claims.ISSUED_AT, new Date(nowMillis));
         claims.put(Claims.EXPIRATION, expirationDate);
-        claims.put("userId", user.getUserId());
-        claims.put("email", user.getEmail());
+        claims.put("userId", userId);
+        claims.put("email", email);
 
         return Jwts.builder()
                 .claims(claims)
@@ -72,26 +71,26 @@ public class JwtUtils {
                     .parseSignedClaims(token)
                     .getPayload();
         } catch (ExpiredJwtException e) {
-            log.error("[isValidToken] 토큰 세션 만료: {}", token, e);
+            log.error("[extractClaims] 토큰 세션 만료: {}", token, e);
             throw new CustomBadRequestException(ErrorCodes.JWT_TOKEN_EXPIRED.getNumber(), ErrorCodes.JWT_TOKEN_EXPIRED.getMessage());
         } catch (SignatureException e) {
-            log.error("[isValidToken] 시그니처 예외: {}", token, e);
+            log.error("[extractClaims] 시그니처 예외: {}", token, e);
             throw new CustomBadRequestException(ErrorCodes.JWT_TOKEN_SIGNATURE_ERROR.getNumber(), ErrorCodes.JWT_TOKEN_SIGNATURE_ERROR.getMessage());
         } catch (MalformedJwtException e) {
-            log.error("[isValidToken] 조작된 토큰: {}", token, e);
+            log.error("[extractClaims] 조작된 토큰: {}", token, e);
             throw new CustomBadRequestException(ErrorCodes.JWT_TOKEN_MALFORMED.getNumber(), ErrorCodes.JWT_TOKEN_MALFORMED.getMessage());
         } catch (UnsupportedJwtException e) {
-            log.error("[isValidToken] 지원하지 않는 토큰: {}", token, e);
+            log.error("[extractClaims] 지원하지 않는 토큰: {}", token, e);
             throw new CustomBadRequestException(ErrorCodes.JWT_TOKEN_NOT_SUPPORTED.getNumber(), ErrorCodes.JWT_TOKEN_NOT_SUPPORTED.getMessage());
         } catch (IllegalArgumentException e) {
-            log.error("[isValidToken] 매개변수 예외: {}", token, e);
+            log.error("[extractClaims] 매개변수 예외: {}", token, e);
             throw new CustomBadRequestException(ErrorCodes.JWT_TOKEN_ILLEGAL_ARGUMENT.getNumber(), ErrorCodes.JWT_TOKEN_ILLEGAL_ARGUMENT.getMessage());
         } catch (JwtException e) {
-            log.error("[isValidToken] Invalid token: {}", token, e);
+            log.error("[extractClaims] Invalid token: {}", token, e);
             throw new CustomBadRequestException(ErrorCodes.JWT_TOKEN_EXCEPTION.getNumber(), ErrorCodes.JWT_TOKEN_EXCEPTION.getMessage());
         } catch (Exception e) {
-            log.error("Failed to decrypt JWT token", e);
-            throw new CustomException(ErrorCodes.INTERNAL_SERVER_ERROR.getNumber(), ErrorCodes.INTERNAL_SERVER_ERROR.getMessage());
+            log.error("[extractClaims] Failed to decrypt JWT token", e);
+            throw new CustomException(ErrorCodes.JWT_TOKEN_DECRYPT_FAILED.getNumber(), ErrorCodes.JWT_TOKEN_DECRYPT_FAILED.getMessage());
         }
     }
 

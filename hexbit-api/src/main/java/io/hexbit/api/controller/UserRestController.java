@@ -3,6 +3,7 @@ package io.hexbit.api.controller;
 import io.hexbit.api.security.annotation.ClientRequest;
 import io.hexbit.api.security.annotation.Secured;
 import io.hexbit.api.security.resolver.WebRequest;
+import io.hexbit.core.common.exception.CustomUnauthorizedException;
 import io.hexbit.core.common.response.CustomResponse;
 import io.hexbit.core.user.domain.User;
 import io.hexbit.core.user.dto.UserResponseDto;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import static io.hexbit.core.common.enums.ErrorCodes.SESSION_USER_NOT_MATCHED;
 
 @Slf4j
 @RestController
@@ -43,6 +46,10 @@ public class UserRestController {
     public CustomResponse getUser(
             @ClientRequest WebRequest webRequest,
             @PathVariable @Min(1) Long userId) {
+
+        if (!webRequest.getUserId().equals(userId)) {
+            throw new CustomUnauthorizedException(SESSION_USER_NOT_MATCHED.getNumber(), SESSION_USER_NOT_MATCHED.getMessage());
+        }
 
         User item = userService.getUser(userId);
 

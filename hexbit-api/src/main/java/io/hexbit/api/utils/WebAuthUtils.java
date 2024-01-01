@@ -4,22 +4,17 @@ import io.hexbit.api.security.domain.AuthTokenWrapper;
 import io.hexbit.core.user.domain.UserSessionDevice;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class WebAuthUtils {
 
-    @Autowired
-    private JwtUtils jwtUtils;
-
-    @Autowired
-    private WebUtils webUtils;
-
-    public WebAuthUtils() {
-    }
+    private final JwtUtils jwtUtils;
+    private final WebUtils webUtils;
 
     public String getApiKey(HttpServletRequest request) {
         return (request.getHeader("Api-Key") != null) ? request.getHeader("Api-Key") : request.getParameter("apiKey");

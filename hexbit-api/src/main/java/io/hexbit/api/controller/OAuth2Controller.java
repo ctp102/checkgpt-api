@@ -51,16 +51,16 @@ public class OAuth2Controller {
 
         // 1. oAuth2Provider 검증
         OAuth2ProviderTypes.checkRegisteredOAuth2Provider(oAuth2Provider);
-        OAuth2Service oAuth2Service = oAuth2ServiceMap.get(oAuth2Provider + "OAuth2Service");
+        OAuth2Service oAuth2Service = oAuth2ServiceMap.get(oAuth2Provider.toLowerCase() + "OAuth2Service");
 
-        // 2. oAuth2RequestDto에서 토큰 추출하여 카카오 api 호출하여 회원 정보 받아옴
+        // 2. OAuth Resource Server로부터 회원 정보 조회
         User user = oAuth2Service.getOAuth2User(oAuth2RequestDto);
 
-        // 3. 회원 정보로 회원 가입 또는 회원 가입 패스 처리
+        // 3. 회원 가입 또는 회원 가입 패스 처리
         User savedUser = userService.joinUser(user);
 
-        // 4. 회원 정보로 jwt 토큰 생성
-        String authToken = jwtUtils.createJwt(savedUser);
+        // 4. 회원 정보 기반의 jwt 토큰 생성
+        String authToken = jwtUtils.createJwt(savedUser.getUserId(), savedUser.getEmail());
 
         UserResponseDto userResponseDto = UserResponseDto.of(savedUser);
 

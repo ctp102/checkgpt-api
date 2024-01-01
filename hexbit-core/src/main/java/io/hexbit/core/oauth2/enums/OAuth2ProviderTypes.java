@@ -1,9 +1,10 @@
 package io.hexbit.core.oauth2.enums;
 
-import io.hexbit.core.common.enums.ErrorCodes;
 import io.hexbit.core.common.exception.CustomBadRequestException;
 
 import java.util.Arrays;
+
+import static io.hexbit.core.common.enums.ErrorCodes.NOT_REGISTERED_OAUTH2_PROVIDER;
 
 public enum OAuth2ProviderTypes {
 
@@ -14,7 +15,7 @@ public enum OAuth2ProviderTypes {
 
     public static void checkRegisteredOAuth2Provider(String oAuth2Provider) {
         if (findByName(oAuth2Provider) == null) {
-            throw new CustomBadRequestException(ErrorCodes.NOT_REGISTERED_OAUTH2_PROVIDER.getNumber(), ErrorCodes.NOT_REGISTERED_OAUTH2_PROVIDER.getMessage());
+            throw new CustomBadRequestException(NOT_REGISTERED_OAUTH2_PROVIDER.getNumber(), NOT_REGISTERED_OAUTH2_PROVIDER.getMessage());
         }
     }
 
