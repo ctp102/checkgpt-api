@@ -8,6 +8,17 @@ rest:
       connect-timeout: 30000
       read-timeout: 30000
 
+springdoc:
+  packages-to-scan: io.hexbit.api.controller
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
+  swagger-ui:
+    path: /swagger-ui/index.html
+    disable-swagger-default-url: true
+    display-request-duration: true
+    operations-sorter: method
+  override-with-generic-response: false
+
 --- # default profile
 spring:
   profiles:

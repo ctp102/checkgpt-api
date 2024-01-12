@@ -1,5 +1,6 @@
 package io.hexbit.api.controller;
 
+import io.hexbit.api.config.annotation.Swagger200Response;
 import io.hexbit.api.security.annotation.ClientRequest;
 import io.hexbit.api.security.annotation.Secured;
 import io.hexbit.api.security.resolver.WebRequest;
@@ -17,6 +18,10 @@ import io.hexbit.core.oauth2.utils.OAuth2Utils;
 import io.hexbit.core.user.domain.User;
 import io.hexbit.core.user.dto.UserResponseDto;
 import io.hexbit.core.user.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@Tag(name = "OAuth2 Login API")
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -41,6 +47,12 @@ public class OAuth2Controller {
     /**
      * AOS/IOS 전용
      */
+    @Operation(summary = "회원 JWT 인증 토큰 생성")
+    @Parameters({
+            @Parameter(name = "webRequest", hidden = true),
+            @Parameter(name = "oAuth2Provider", description = "OAuth2 Provider 이름", required = true, example = "kakao")
+    })
+    @Swagger200Response
     @Secured
     @ResponseBody
     @PostMapping(value = "/api/v1/oauth2/{oAuth2Provider}/auth-token", consumes = MediaType.APPLICATION_JSON_VALUE)
